@@ -7,7 +7,6 @@ out/
 ### Gradle
 build
 .gradle
-gradle
 
 ### Kotlin ###
 .kotlin
