@@ -11,7 +11,6 @@ class IntelliJSvelteParser(private val contextElement: PsiElement) : SvelteParse
     override fun findUsedVariables(content: String): List<String> {
         val usedVariables = mutableSetOf<String>()
         
-        // On parcourt l'élément PSI sélectionné pour trouver les références
         contextElement.accept(object : PsiRecursiveElementVisitor() {
             override fun visitElement(element: PsiElement) {
                 super.visitElement(element)

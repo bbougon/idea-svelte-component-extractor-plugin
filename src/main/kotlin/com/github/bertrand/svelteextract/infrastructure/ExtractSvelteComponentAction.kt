@@ -1,18 +1,14 @@
 package com.github.bertrand.svelteextract.infrastructure
 
 import com.github.bertrand.svelteextract.domain.ExtractRequest
-import com.github.bertrand.svelteextract.domain.ExtractSvelteComponentUseCase
+import com.github.bertrand.svelteextract.domain.ExtractSvelteComponent
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.PsiManager
-import com.intellij.psi.util.PsiUtilBase
 import dev.blachut.svelte.lang.SvelteHTMLLanguage
 
 class ExtractSvelteComponentAction : AnAction() {
@@ -52,7 +48,7 @@ class ExtractSvelteComponentAction : AnAction() {
         // On récupère l'élément PSI à la position du curseur pour l'analyse des variables
         val elementAtCaret = psiFile.findElementAt(selectionModel.selectionStart) ?: return
         val parser = IntelliJSvelteParser(elementAtCaret)
-        val useCase = ExtractSvelteComponentUseCase(parser)
+        val useCase = ExtractSvelteComponent(parser)
         
         val request = ExtractRequest(
             sourceCode = psiFile.text,

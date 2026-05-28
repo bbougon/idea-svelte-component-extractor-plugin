@@ -20,7 +20,7 @@ class ExtractSvelteComponentTest {
             newComponentName = "Header"
         )
 
-        val result = ExtractSvelteComponentUseCase().execute(request)
+        val result = ExtractSvelteComponent().execute(request)
 
         assertEquals("<h1>Hello</h1>", result.newComponentContent.trim())
         assertContains(result.modifiedSourceCode.trim(), "<div>\n    <Header />\n</div>")
@@ -43,7 +43,7 @@ class ExtractSvelteComponentTest {
             newComponentName = "Header"
         )
 
-        val result = ExtractSvelteComponentUseCase().execute(request)
+        val result = ExtractSvelteComponent().execute(request)
 
         val expectedSource = """
             <script>
@@ -82,7 +82,7 @@ class ExtractSvelteComponentTest {
             override fun findUsedVariables(content: String): List<String> = listOf("name")
         }
 
-        val result = ExtractSvelteComponentUseCase(parserStub).execute(request)
+        val result = ExtractSvelteComponent(parserStub).execute(request)
 
         // Attendu dans le nouveau composant
         val expectedNewContent = """
@@ -126,7 +126,7 @@ class ExtractSvelteComponentTest {
             newComponentName = "Header"
         )
 
-        val result = ExtractSvelteComponentUseCase().execute(request)
+        val result = ExtractSvelteComponent().execute(request)
 
         val expectedSource = """
             <script lang="ts">
@@ -162,7 +162,7 @@ class ExtractSvelteComponentTest {
             override fun findUsedVariables(content: String): List<String> = listOf("name")
         }
 
-        val result = ExtractSvelteComponentUseCase(parserStub).execute(request)
+        val result = ExtractSvelteComponent(parserStub).execute(request)
 
         val expectedNewContent = """
             <script lang="ts">
@@ -200,7 +200,7 @@ class ExtractSvelteComponentTest {
             newComponentName = "Wrapper"
         )
 
-        val result = ExtractSvelteComponentUseCase().execute(request)
+        val result = ExtractSvelteComponent().execute(request)
 
         val expectedNewContent = """
             <script lang="ts">
@@ -232,7 +232,7 @@ class ExtractSvelteComponentTest {
             newComponentName = "Wrapper"
         )
 
-        val result = ExtractSvelteComponentUseCase().execute(request)
+        val result = ExtractSvelteComponent().execute(request)
 
         assertContains(result.newComponentContent, "import UnComposant from '@lucide/svelte';")
     }
@@ -255,7 +255,7 @@ class ExtractSvelteComponentTest {
             override fun findUsedVariables(content: String): List<String> = emptyList()
         }
 
-        val result = ExtractSvelteComponentUseCase(parserStub).execute(request)
+        val result = ExtractSvelteComponent(parserStub).execute(request)
 
         assertEquals("<h1>Hello</h1>", result.newComponentContent.trim())
     }
@@ -273,7 +273,7 @@ class ExtractSvelteComponentTest {
             override fun findUsedVariables(content: String): List<String> = listOf("name")
         }
 
-        val result = ExtractSvelteComponentUseCase(parserStub).execute(request)
+        val result = ExtractSvelteComponent(parserStub).execute(request)
 
         val expectedNewContent = """
             <script>
@@ -299,7 +299,7 @@ class ExtractSvelteComponentTest {
             newComponentName = "Header"
         )
 
-        val result = ExtractSvelteComponentUseCase().execute(request)
+        val result = ExtractSvelteComponent().execute(request)
 
         val expectedSource = """
             <script>
