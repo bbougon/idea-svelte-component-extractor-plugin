@@ -28,10 +28,7 @@ jobs:
       - name: Build
         run: ./gradlew buildPlugin
 
-      - name: Find plugin artifact
-        run: find . -name "*.zip" -not -path "./.gradle/*" | sort
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/distributions/*.zip
+          files: build/distributions/plugin-extrait-composant-*.zip
