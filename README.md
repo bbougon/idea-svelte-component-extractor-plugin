@@ -2,7 +2,7 @@
 
 ## Build
 **Prerequisites**
-- JDK 26
+- JDK 21
 - Gradle
 
 **Execute the following commands**
