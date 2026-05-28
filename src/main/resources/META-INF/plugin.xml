@@ -1,0 +1,22 @@
+<idea-plugin>
+    <id>com.github.bertrand.svelte-extract</id>
+    <name>Svelte Extract Component</name>
+    <vendor>Bertrand</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>dev.blachut.svelte.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+
+    <actions>
+        <action id="com.github.bertrand.svelteextract.ExtractSvelteComponent"
+                class="com.github.bertrand.svelteextract.infrastructure.ExtractSvelteComponentAction"
+                text="Extract Svelte Component"
+                description="Extract selection to a new Svelte component">
+            <add-to-group group-id="RefactoringMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt E"/>
+        </action>
+    </actions>
+</idea-plugin>
