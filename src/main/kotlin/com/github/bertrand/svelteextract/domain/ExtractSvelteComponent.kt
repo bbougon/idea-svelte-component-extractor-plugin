@@ -16,10 +16,22 @@ private const val IMPORT_TAG = """import\s+\{?\s*(\w+)[\w\s,]*\}?\s+from\s+['"][
 
 class ExtractSvelteComponent(private val parser: SvelteParser? = null) {
     fun execute(request: ExtractRequest): ExtractResult {
-        val usedVariables = parser?.findUsedVariables(request.selectedContent) ?: emptyList()
+        val rawVariables = parser?.findUsedVariables(request.selectedContent) ?: emptyList()
+
+        val importedIdentifiers = Regex(IMPORT_TAG).findAll(request.sourceCode)
+            .map { it.groupValues[1] }
+            .toSet()
+
+        val standaloneIdentifiers = Regex("""(?<![.\w])(\w+)""").findAll(request.selectedContent)
+            .map { it.groupValues[1] }
+            .toSet()
+
+        val usedVariables = rawVariables.filter { variable ->
+            variable !in importedIdentifiers && variable in standaloneIdentifiers
+        }
 
         fun callNewComponent(): String {
-            val propsString = usedVariables.joinToString(" ") { "$it={$it}" }
+            val propsString = usedVariables.joinToString(" ") { "{$it}" }
             val componentCall = if (propsString.isEmpty()) {
                 "<${request.newComponentName} />"
             } else {

@@ -3,6 +3,7 @@ package com.github.bertrand.svelteextract.domain
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertContains
+import kotlin.test.assertFalse
 
 class ExtractSvelteComponentTest {
 
@@ -100,7 +101,7 @@ class ExtractSvelteComponentTest {
                 let count = 0;
             </script>
             <div>
-                <Title name={name} />
+                <Title {name} />
                 <p>Count is {count}</p>
             </div>
         """.trimIndent()
@@ -235,6 +236,117 @@ class ExtractSvelteComponentTest {
         val result = ExtractSvelteComponent().execute(request)
 
         assertContains(result.newComponentContent, "import UnComposant from '@lucide/svelte';")
+    }
+
+    @Test
+    fun `should pass detected props in component call`() {
+        val selectedContent = """
+            <div class="date">
+                <span>{formateDate.jourCourt(seance.date)}</span>
+            </div>
+        """.trimIndent()
+
+        val sourceCode = """
+            <script lang="ts">
+                import { formateDate } from './donnees.eleve';
+            </script>
+            <div>
+                $selectedContent
+            </div>
+        """.trimIndent()
+
+        val request = ExtractRequest(
+            sourceCode = sourceCode,
+            selectedContent = selectedContent,
+            newComponentName = "DateComposant"
+        )
+
+        val parserStub = object : SvelteParser {
+            override fun findUsedVariables(content: String): List<String> = listOf("seance")
+        }
+
+        val result = ExtractSvelteComponent(parserStub).execute(request)
+
+        assertContains(result.newComponentContent, "export let seance;")
+        assertContains(result.modifiedSourceCode, "<DateComposant {seance} />")
+    }
+
+    @Test
+    fun `should import used functions and declare used variables as props`() {
+        val sourceCode = """
+            <script lang="ts">
+                import { Clock } from '@lucide/svelte';
+                import { formateDate } from './donnees.eleve';
+
+                const { seance } = ${'$'}props();
+            </script>
+            <li>
+                <div class="date">
+                    <span>{formateDate.jourCourt(seance.date)}</span>
+                    <span>{formateDate.numero(seance.date)}</span>
+                </div>
+                <Clock class="w-4 h-4" />
+            </li>
+        """.trimIndent()
+
+        val selectedContent = """
+            <div class="date">
+                <span>{formateDate.jourCourt(seance.date)}</span>
+                <span>{formateDate.numero(seance.date)}</span>
+            </div>
+        """.trimIndent()
+
+        val request = ExtractRequest(
+            sourceCode = sourceCode,
+            selectedContent = selectedContent,
+            newComponentName = "DateComposant"
+        )
+
+        val parserStub = object : SvelteParser {
+            override fun findUsedVariables(content: String): List<String> = listOf("seance")
+        }
+
+        val result = ExtractSvelteComponent(parserStub).execute(request)
+
+        assertContains(result.newComponentContent, "import { formateDate } from './donnees.eleve';")
+        assertContains(result.newComponentContent, "export let seance;")
+        assertFalse(
+            result.newComponentContent.contains("import { Clock }"),
+            "Clock ne doit pas être importé car il n'est pas dans la sélection"
+        )
+    }
+
+    @Test
+    fun `should not declare imported functions or property accesses as props`() {
+        val sourceCode = """
+            <script lang="ts">
+                import { formateDate } from './donnees.eleve';
+            </script>
+            <div>{formateDate.jourCourt(seance.date)}</div>
+        """.trimIndent()
+
+        val selectedContent = """<div>{formateDate.jourCourt(seance.date)}</div>"""
+
+        val request = ExtractRequest(
+            sourceCode = sourceCode,
+            selectedContent = selectedContent,
+            newComponentName = "DateComposant"
+        )
+
+        val parserStub = object : SvelteParser {
+            override fun findUsedVariables(content: String): List<String> =
+                listOf("date", "formateDate", "jourCourt", "seance")
+        }
+
+        val result = ExtractSvelteComponent(parserStub).execute(request)
+
+        assertContains(result.newComponentContent, "export let seance;")
+        assertFalse(result.newComponentContent.contains("export let formateDate;"),
+            "formateDate est importé, pas une prop")
+        assertFalse(result.newComponentContent.contains("export let jourCourt;"),
+            "jourCourt est une propriété de formateDate")
+        assertFalse(result.newComponentContent.contains("export let date;"),
+            "date est une propriété de seance")
     }
 
     @Test

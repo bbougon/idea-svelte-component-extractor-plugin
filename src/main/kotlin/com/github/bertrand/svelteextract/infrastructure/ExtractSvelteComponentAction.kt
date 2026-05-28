@@ -45,9 +45,7 @@ class ExtractSvelteComponentAction : AnAction() {
         if (componentName.isBlank()) return
 
         // 2. Préparer l'extraction via le domaine
-        // On récupère l'élément PSI à la position du curseur pour l'analyse des variables
-        val elementAtCaret = psiFile.findElementAt(selectionModel.selectionStart) ?: return
-        val parser = IntelliJSvelteParser(elementAtCaret)
+        val parser = IntelliJSvelteParser(psiFile, selectionModel.selectionStart, selectionModel.selectionEnd)
         val useCase = ExtractSvelteComponent(parser)
         
         val request = ExtractRequest(
