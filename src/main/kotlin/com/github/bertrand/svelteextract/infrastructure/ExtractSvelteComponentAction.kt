@@ -45,7 +45,7 @@ class ExtractSvelteComponentAction : AnAction() {
         if (componentName.isBlank()) return
 
         // 2. Préparer l'extraction via le domaine
-        val parser = IntelliJSvelteParser(psiFile, selectionModel.selectionStart, selectionModel.selectionEnd)
+        val parser = IntelliJSvelteParser(IntelliJSvelteFile(psiFile), selectionModel.selectionStart, selectionModel.selectionEnd)
         val useCase = ExtractSvelteComponent(parser)
         
         val request = ExtractRequest(
